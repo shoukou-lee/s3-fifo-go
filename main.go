@@ -1,81 +1,37 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/shoukou-lee/s3-fifo-go/internal"
 )
 
+type element struct {
+	key   string
+	value string
+}
+
 // main function is the entry point of the program
 func main() {
-	s3Fifo := internal.NewS3Fifo(12)
 
-	s3Fifo.Put("key0", "value0")
-	s3Fifo.Put("key0", "value0")
-	s3Fifo.Put("key0", "value0")
-	s3Fifo.Log()
-	s3Fifo.Put("key0", "value1")
-	s3Fifo.Log()
-	s3Fifo.Get("key0")
-	s3Fifo.Log()
-	s3Fifo.Put("key1", "value1")
-	s3Fifo.Log()
-	s3Fifo.Get("key0")
-	s3Fifo.Log()
-	s3Fifo.Get("key0")
-	s3Fifo.Log()
-	s3Fifo.Get("key0")
-	s3Fifo.Log()
-	s3Fifo.Get("key0")
-	s3Fifo.Log()
-	s3Fifo.Put("key2", "value2")
-	s3Fifo.Log()
-	s3Fifo.Put("key3", "value3")
-	s3Fifo.Log()
-	s3Fifo.Put("key4", "value4")
-	s3Fifo.Log()
-	s3Fifo.Put("key5", "value5")
-	s3Fifo.Log()
-	s3Fifo.Put("key6", "value6")
-	s3Fifo.Log()
-	s3Fifo.Put("key7", "value7")
-	s3Fifo.Log()
-	s3Fifo.Put("key8", "value8")
-	s3Fifo.Log()
-	s3Fifo.Put("key9", "value9")
-	s3Fifo.Log()
-	s3Fifo.Put("key10", "value10")
-	s3Fifo.Log()
-	s3Fifo.Put("key11", "value11")
-	s3Fifo.Log()
-	s3Fifo.Put("key12", "value12")
-	s3Fifo.Log()
+	sequence := []element{
+		{"lime", "a"},
+		{"coral", "b"},
+		{"lime", "c"},
+		{"green", "d"},
+		{"red", "e"},
+		{"gray", "f"},
+		{"gray", "g"},
+		{"lime", "h"},
+		{"black", "i"},
+		{"lime", "j"},
+		{"red", "k"},
+		{"lime", "l"},
+		{"pink", "m"},
+		{"lime", "n"},
+	}
 
-	get0 := s3Fifo.Get("key0")
-	get1 := s3Fifo.Get("key1")
-	get2 := s3Fifo.Get("key2")
-	get3 := s3Fifo.Get("key3")
-	get4 := s3Fifo.Get("key4")
-	get5 := s3Fifo.Get("key5")
-	get6 := s3Fifo.Get("key6")
-	get7 := s3Fifo.Get("key7")
-	get8 := s3Fifo.Get("key8")
-	get9 := s3Fifo.Get("key9")
-	get10 := s3Fifo.Get("key10")
-	get11 := s3Fifo.Get("key11")
-	get12 := s3Fifo.Get("key12")
-
-	fmt.Printf("Get key0: %v\n", get0)
-	fmt.Printf("Get key1: %v\n", get1)
-	fmt.Printf("Get key2: %v\n", get2)
-	fmt.Printf("Get key3: %v\n", get3)
-	fmt.Printf("Get key4: %v\n", get4)
-	fmt.Printf("Get key5: %v\n", get5)
-	fmt.Printf("Get key6: %v\n", get6)
-	fmt.Printf("Get key7: %v\n", get7)
-	fmt.Printf("Get key8: %v\n", get8)
-	fmt.Printf("Get key9: %v\n", get9)
-	fmt.Printf("Get key10: %v\n", get10)
-	fmt.Printf("Get key11: %v\n", get11)
-	fmt.Printf("Get key12: %v\n", get12)
+	s3Fifo := internal.NewS3Fifo(20)
+	for _, s := range sequence {
+		s3Fifo.GetOrElsePut(s.key, s.value)
+		s3Fifo.Log()
+	}
 }

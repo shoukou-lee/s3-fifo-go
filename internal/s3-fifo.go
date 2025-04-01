@@ -37,11 +37,19 @@ func NewS3Fifo(maxCap int) *S3Fifo {
 	}
 }
 
+func (s *S3Fifo) GetOrElsePut(key string, value interface{}) interface{} {
+	if found := s.Get(key); found != nil {
+		return found
+	}
+	s.Put(key, value)
+	return value
+}
+
 // Get retrieves the value associated with the given key from the cache if exists, otherwise nil.
 func (s *S3Fifo) Get(key string) interface{} {
-	if n, ok := s.hashTable[key]; ok {
-		n.IncFreq()
-		return n.Value()
+	if found, ok := s.hashTable[key]; ok {
+		found.IncFreq()
+		return found.Value()
 	}
 	return nil
 }
@@ -54,13 +62,6 @@ func (s *S3Fifo) Put(key string, value interface{}) {
 
 // New objects are inserted into S if not in G. Otherwise, it is inserted into M.
 func (s *S3Fifo) insert(n *Node) {
-	if found, ok := s.hashTable[n.Key()]; ok {
-		found.IncFreq()
-		found.SetValue(n.Value())
-		s.hashTable[n.Key()] = found
-		return
-	}
-
 	var evicted *Node = nil
 
 	if s.ghost.In(n) {
@@ -77,19 +78,22 @@ func (s *S3Fifo) insert(n *Node) {
 
 func (s *S3Fifo) Log() {
 	fmt.Printf("small: %d | ", s.small.q.Size())
-	for _, n := range s.small.q.items {
+	for i := len(s.small.q.items) - 1; i >= 0; i-- {
+		n := s.small.q.items[i]
 		fmt.Printf("%s(%d) ", n.Key(), n.Freq())
 	}
 	fmt.Println()
 
 	fmt.Printf("main: %d | ", s.main.q.Size())
-	for _, n := range s.main.q.items {
+	for i := len(s.main.q.items) - 1; i >= 0; i-- {
+		n := s.main.q.items[i]
 		fmt.Printf("%s(%d) ", n.Key(), n.Freq())
 	}
 	fmt.Println()
 
 	fmt.Printf("ghost: %d | ", s.ghost.q.Size())
-	for _, n := range s.ghost.q.items {
+	for i := len(s.ghost.q.items) - 1; i >= 0; i-- {
+		n := s.ghost.q.items[i]
 		fmt.Printf("%s(%d) ", n.Key(), n.Freq())
 	}
 	fmt.Println()
