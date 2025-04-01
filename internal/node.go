@@ -15,6 +15,14 @@ func NewNode(k string, v interface{}) *Node {
 	}
 }
 
+func NewNodeWithFreq(k string, v interface{}, freq int) *Node {
+	return &Node{
+		key: k,
+		value: v,
+		freq: freq,
+	}
+}
+
 func (n *Node) IncFreq() {
 	if n.freq >= 3 {
 		return
@@ -35,6 +43,10 @@ func (n *Node) Key() string {
 
 func (n *Node) Value() interface{} {
 	return n.value
+}
+
+func (n *Node) SetValue(v interface{}) {
+	n.value = v
 }
 
 func (n *Node) Freq() int {

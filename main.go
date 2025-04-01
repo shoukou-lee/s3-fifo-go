@@ -11,6 +11,10 @@ func main() {
 	s3Fifo := internal.NewS3Fifo(12)
 
 	s3Fifo.Put("key0", "value0")
+	s3Fifo.Put("key0", "value0")
+	s3Fifo.Put("key0", "value0")
+	s3Fifo.Log()
+	s3Fifo.Put("key0", "value1")
 	s3Fifo.Log()
 	s3Fifo.Get("key0")
 	s3Fifo.Log()

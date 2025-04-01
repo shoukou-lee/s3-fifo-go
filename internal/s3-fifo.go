@@ -54,6 +54,13 @@ func (s *S3Fifo) Put(key string, value interface{}) {
 
 // New objects are inserted into S if not in G. Otherwise, it is inserted into M.
 func (s *S3Fifo) insert(n *Node) {
+	if found, ok := s.hashTable[n.Key()]; ok {
+		found.IncFreq()
+		found.SetValue(n.Value())
+		s.hashTable[n.Key()] = found
+		return
+	}
+
 	var evicted *Node = nil
 
 	if s.ghost.In(n) {
