@@ -50,22 +50,22 @@ func (s *S3Fifo) Get(key string) interface{} {
 func (s *S3Fifo) Put(key string, value interface{}) {
 	n := NewNode(key, value)
 	s.insert(n)
-	s.hashTable[n.Key()] = n
 }
 
 // New objects are inserted into S if not in G. Otherwise, it is inserted into M.
 func (s *S3Fifo) insert(n *Node) {
+	var evicted *Node = nil
+
 	if s.ghost.In(n) {
-		evicted := s.main.Insert(n)
-		if evicted != nil {
-			delete(s.hashTable, evicted.Key())
-		}
-		return
+		evicted = s.main.Insert(n)
+	} else {
+		evicted = s.small.Insert(n)
 	}
-	evicted := s.small.Insert(n)
+
 	if evicted != nil {
 		delete(s.hashTable, evicted.Key())
 	}
+	s.hashTable[n.Key()] = n
 }
 
 func (s *S3Fifo) Log() {
